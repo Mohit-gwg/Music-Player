@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, StatusBar, } from 'react-native';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
-import ScreenA from './Screens/ScreenA';
-import ScreenB from './Screens/ScreenB';
+import { AppRegistry } from 'react-native';
+import AppNavigator from './AppNavigator';
 
-const MainNavigator = createStackNavigator({
-  ScreenA: { screen: ScreenA },
-  ScreenB: { screen: ScreenB },
-});
+export default class App extends Component {
+  render() {
+    return (
+      <AppNavigator />
+    );
+  }
+};
 
-const App = createAppContainer(MainNavigator);
-
-export default App;
+AppRegistry.registerComponent('appname', () => App);
