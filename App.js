@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { AppRegistry } from 'react-native';
 import AppNavigator from './AppNavigator';
+import { Root } from 'native-base';
 
 export default class App extends Component {
   render() {
     return (
-      <AppNavigator />
+      <Root>
+        <AppNavigator />
+      </Root>
     );
   }
 };
-
-AppRegistry.registerComponent('appname', () => App);

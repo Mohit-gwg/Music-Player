@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity, FlatList } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
+import { Card, Thumbnail, Header, Item, Input, Icon, Button } from 'native-base';
 
 export default class Artists extends Component {
     constructor(props) {
@@ -9,62 +10,42 @@ export default class Artists extends Component {
             musicData: [],
         }
     }
-    async componentDidMount() {
-        await TrackPlayer.setupPlayer({});
-        await TrackPlayer.add({
-            id: 'track',
-            url: 'http://tegos.kz/new/mp3_full/Luis_Fonsi_feat._Daddy_Yankee_-_Despacito.mp3', // just for test!
-            title: 'Despacito',
-            artist: 'Luis Fonsi Feat. Daddy Yankee',
-            artwork: 'https://images-eu.ssl-images-amazon.com/images/I/61JH2ggghmL._AC_US160_.jpg'
+    componentWillMount() {
+        fetch("http://storage.googleapis.com/automotive-media/music.json", {
+            method: 'GET'
         })
-    }
-    play = () => {
-        TrackPlayer.add({
-            id: 'track',
-            url: 'http://tegos.kz/new/mp3_full/Luis_Fonsi_feat._Daddy_Yankee_-_Despacito.mp3',
-            title: 'Despacito',
-            artist: 'Luis Fonsi Feat. Daddy Yankee',
-            artwork: 'https://images-eu.ssl-images-amazon.com/images/I/61JH2ggghmL._AC_US160_.jpg'
-        }).then(() => {
-            TrackPlayer.play();
-        });
-    }
-    pause = () => {
-        TrackPlayer.add({
-            id: 'track',
-            url: 'http://tegos.kz/new/mp3_full/Luis_Fonsi_feat._Daddy_Yankee_-_Despacito.mp3',
-            title: 'Despacito',
-            artist: 'Luis Fonsi Feat. Daddy Yankee',
-            artwork: 'https://images-eu.ssl-images-amazon.com/images/I/61JH2ggghmL._AC_US160_.jpg'
-        }).then(() => {
-            TrackPlayer.pause();
-        });
-    }
-    reset = () => {
-        TrackPlayer.add({
-            id: 'track',
-            url: 'http://tegos.kz/new/mp3_full/Luis_Fonsi_feat._Daddy_Yankee_-_Despacito.mp3',
-            title: 'Despacito',
-            artist: 'Luis Fonsi Feat. Daddy Yankee',
-            artwork: 'https://images-eu.ssl-images-amazon.com/images/I/61JH2ggghmL._AC_US160_.jpg'
-        }).then(() => {
-            TrackPlayer.reset();
-        });
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ musicData: responseJson.music })
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
     render() {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#03DAC6' }}>
+            <View style={{ flex: 1, backgroundColor: '#ECEFF1' }}>
                 <StatusBar barStyle="light-content" backgroundColor="#E57373" />
-                <TouchableOpacity onPress={() => this.play()}>
-                    <Text style={{ color: '#B00020', fontWeight: 'bold', fontSize: 20 }}>Play music</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ marginTop: 32 }} onPress={() => this.pause()}>
-                    <Text style={{ color: '#B00020', fontWeight: 'bold', fontSize: 20 }}>Pause music</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ marginTop: 32 }} onPress={() => this.reset()}>
-                    <Text style={{ color: '#B00020', fontWeight: 'bold', fontSize: 20 }}>Reset music</Text>
-                </TouchableOpacity>
+                <FlatList
+                    showsVerticalScrollIndicator={false}
+                    style={{ margin: 8 }}
+                    data={this.state.musicData}
+                    renderItem={({ item }) =>
+                        <TouchableOpacity >
+                            <View style={{ flexDirection: 'row', alignItems: 'center', margin: 8 }}>
+                                <View style={{ flex: 0.3 }}>
+                                    <Thumbnail square style={{ backgroundColor: '#d3d3d3', borderRadius: 4 }} source={{ uri: item.image }} />
+                                </View>
+                                <View style={{ flexDirection: 'column', flex: 0.7 }}>
+                                    <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#F44336' }}>{item.artist}</Text>
+                                    <Text style={{ fontSize: 12, marginTop: 4, color: '#E57373' }}>{item.totalTrackCount} songs</Text>
+                                    <View style={{ borderWidth: 0.5, borderColor: '#d3d3d3', marginTop: 16 }} />
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    }
+                    keyExtractor={item => item.trackNumber.toString()}
+                />
             </View>
         );
     }
