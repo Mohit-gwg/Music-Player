@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
 
 export default class Favourites extends Component {
@@ -7,7 +7,7 @@ export default class Favourites extends Component {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <StatusBar barStyle="light-content" backgroundColor="#E57373" />
-                <Text>Favourites</Text>
+                <Text>Favourite Songs</Text>
             </View>
         );
     }

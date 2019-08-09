@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StatusBar, TouchableOpacity, FlatList } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
-import { Card, Thumbnail, Header, Item, Input, Icon, Button } from 'native-base';
+import { Thumbnail } from 'native-base';
 
 export default class Albums extends Component {
     constructor(props) {
