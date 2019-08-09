@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, StatusBar, Text, Image, TouchableOpacity } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
-import { Card, Thumbnail, Header, Item, Input, Icon, Button } from 'native-base';
+import { Icon } from 'native-base';
 import { connect } from 'react-redux';
 import { withNavigation } from 'react-navigation';
 
