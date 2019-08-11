@@ -1,18 +1,12 @@
 import React, { Component } from 'react'
-import { View, StatusBar, Text, Image, TouchableOpacity } from 'react-native';
+import { View, StatusBar, Text, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
-import { Card, Thumbnail, Header, Item, Input, Icon, Button } from 'native-base';
+import { Header, Icon, Button, Body, Title, Right, Card } from 'native-base';
 import { connect } from 'react-redux';
+import { addFavSongData } from '../Actions/FavSongData';
 import { withNavigation } from 'react-navigation';
 
 class SongProfile extends Component {
-    static navigationOptions = ({ navigation }) => ({
-        title: "Music Player",
-        headerStyle: {
-            backgroundColor: '#F44336'
-        },
-        headerTintColor: '#fff',
-    });
     constructor(props) {
         super(props);
         this.state = {
@@ -24,10 +18,20 @@ class SongProfile extends Component {
             currentImage: '',
             currentAlbum: '',
             refresh: false,
-            skipButtonCheck: false,
+            skipSongCheck: false,
+            favClickCheck: false,
             play: 1,
         }
     }
+    static navigationOptions = ({ navigation }) => ({
+        title: "Music Player",
+        headerStyle: {
+            backgroundColor: '#F44336'
+        },
+        headerTintColor: '#fff',
+        headerRight: <Icon type='FontAwesome' name='music' style={{ fontSize: 15, color: '#000', marginRight: 16 }} />
+    });
+
     componentWillMount() {
         fetch("http://storage.googleapis.com/automotive-media/music.json", {
             method: 'GET'
@@ -64,7 +68,7 @@ class SongProfile extends Component {
                 break;
             }
         }
-        this.setState({ skipButtonCheck: true });
+        this.setState({ skipSongCheck: true });
         this.playSong();
     }
     previousSong = () => {
@@ -80,12 +84,12 @@ class SongProfile extends Component {
                 break;
             }
         }
-        this.setState({ skipButtonCheck: true });
+        this.setState({ skipSongCheck: true });
         this.playSong();
     }
     playSong = () => {
         this.setState({ play: 2 });
-        if (this.state.skipButtonCheck == true) {
+        if (this.state.skipSongCheck == true) {
             TrackPlayer.reset();
             TrackPlayer.add({
                 id: this.state.currentTrackNumber,
@@ -116,7 +120,7 @@ class SongProfile extends Component {
     }
     replaySong = () => {
         TrackPlayer.reset();
-        if (this.state.skipButtonCheck === true) {
+        if (this.state.skipSongCheck === true) {
             TrackPlayer.add({
                 id: this.state.currentTrackNumber,
                 url: 'http://storage.googleapis.com/automotive-media/' + this.state.currentSong, // just for test!
@@ -142,12 +146,72 @@ class SongProfile extends Component {
     resetSong = () => {
         TrackPlayer.reset();
     }
+    addFavSong = () => {
+        if (this.state.favClickCheck === true) {
+            this.state.favClickCheck = false;
+            if (this.props.FavSongData.length > 0 && this.state.skipSongCheck === true) {
+                for (i = 0; i < this.props.FavSongData.length; i++) {
+                    if (this.props.FavSongData[i].currentTrackNumber == this.state.currentTrackNumber) {
+                        this.props.FavSongData.splice(this.props.FavSongData[i], 1);
+                    }
+                }
+            }
+            else if (this.props.FavSongData.length > 0 && this.state.skipSongCheck === false) {
+                for (i = 0; i < this.props.FavSongData.length; i++) {
+                    if (this.props.FavSongData[i].trackNumber == this.props.selectedSongData.trackNumber) {
+                        this.props.FavSongData.splice(this.props.FavSongData[i], 1);
+                    }
+                }
+            }
+        } // favClickCheck === true if() end
+        else {
+            this.state.favClickCheck = true;
+            if (this.state.skipSongCheck == true) {
+                var favSongData = {
+                    currentTrackNumber: this.state.currentTrackNumber,
+                    currentSong: this.state.currentSong,
+                    currentTitle: this.state.currentTitle,
+                    currentArtist: this.state.currentArtist,
+                    currentImage: this.state.currentImage,
+                    currentAlbum: this.state.currentAlbum,
+                };
+                this.props.add(favSongData);
+            }
+            else {
+                this.props.add(this.props.selectedSongData);
+            }
+        }
+        this.setState({ refresh: true })
+    }
     render() {
-        console.log('Redux Data', this.props.selectedSongData)
         return (
             <View style={{ flex: 1, backgroundColor: '#ECEFF1' }}>
                 <StatusBar barStyle="light-content" backgroundColor="#E57373" />
-                <Image style={{ height: '55%', width: '100%', backgroundColor: '#d3d3d3' }} source={{ uri: this.props.selectedSongData.image }} />
+                <ImageBackground style={{ height: '55%', width: '100%', backgroundColor: '#d3d3d3' }} source={{ uri: this.props.selectedSongData.image }}>
+                    <View style={{ bottom: 0, right: 0, left: 0, position: 'absolute', justifyContent: 'center', alignItems: 'center' }}>
+                        <Card transparent>
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignContent: 'flex-end' }}>
+                                <View style={{ flexDirection: 'column', padding: 8, }}>
+                                    {
+                                        (this.state.favClickCheck == false)
+                                            ?
+                                            (
+                                                <TouchableOpacity onPress={() => this.addFavSong()}>
+                                                    <Icon type='FontAwesome' name='heart-o' style={{ fontSize: 32, color: '#E57373', marginBottom: 8 }} />
+                                                </TouchableOpacity>
+                                            )
+                                            :
+                                            (
+                                                <TouchableOpacity onPress={() => this.addFavSong()}>
+                                                    <Icon type='FontAwesome' name='heart' style={{ fontSize: 32, color: '#F44336', marginBottom: 8 }} />
+                                                </TouchableOpacity>
+                                            )
+                                    }
+                                </View>
+                            </View>
+                        </Card>
+                    </View>
+                </ImageBackground>
                 <View style={{ margin: 32 }}>
                     <View style={{ flexDirection: 'row' }}>
                         <Icon type='FontAwesome' name='music' style={{ fontSize: 25, color: '#F44336', marginBottom: 16 }} />
@@ -210,7 +274,15 @@ class SongProfile extends Component {
 }
 const mapStateToProps = state => {
     return {
-        selectedSongData: state.songData.item
+        selectedSongData: state.songData.item,
+        FavSongData: state.addFavSongData.favSongData,
     }
 }
-export default withNavigation(connect(mapStateToProps, null)(SongProfile))
+const mapDispatchToProps = dispatch => {
+    return {
+        add: (favSongData) => {
+            dispatch(addFavSongData(favSongData))
+        }
+    }
+}
+export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(SongProfile))

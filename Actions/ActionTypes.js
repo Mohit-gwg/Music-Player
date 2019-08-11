@@ -1,1 +1,2 @@
 export const ADD_SONGDATA = 'ADD_SONGDATA';
+export const ADD_FAVSONGDATA = 'ADD_FAVSONGDATA';
