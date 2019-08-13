@@ -5,6 +5,7 @@ import { Header, Icon, Button, Body, Title, Right, Card } from 'native-base';
 import { connect } from 'react-redux';
 import { addFavSongData } from '../Actions/FavSongData';
 import { withNavigation } from 'react-navigation';
+import { AsyncStorage } from 'react-native';
 
 class SongProfile extends Component {
     constructor(props) {
@@ -20,6 +21,7 @@ class SongProfile extends Component {
             refresh: false,
             skipSongCheck: false,
             favClickCheck: false,
+            favArrayData: [],
             play: 1,
         }
     }
@@ -55,7 +57,27 @@ class SongProfile extends Component {
             artwork: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.image,
         })
     }
+    _storeData = async () => {
+        try {
+            await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
+        } catch (error) {
+            // Error saving data
+        }
+    };
+    _retrieveData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('TASKS');
+            if (value !== null) {
+                // We have data!!
+                console.log(value);
+            }
+        } catch (error) {
+            // Error retrieving data
+        }
+    };
+
     nextSong = () => {
+        this.state.favClickCheck = false;
         var nextTrackNumber = this.state.currentTrackNumber + 1;
         this.state.currentTrackNumber = nextTrackNumber;
         for (var i = 0; i <= this.state.musicData.length; i++) {
@@ -72,6 +94,7 @@ class SongProfile extends Component {
         this.playSong();
     }
     previousSong = () => {
+        this.state.favClickCheck = false;
         var nextTrackNumber = this.state.currentTrackNumber - 1;
         this.state.currentTrackNumber = nextTrackNumber;
         for (var i = 0; i <= this.state.musicData.length; i++) {
@@ -112,7 +135,6 @@ class SongProfile extends Component {
                 TrackPlayer.play();
             });
         }
-
     }
     pauseSong = () => {
         this.setState({ play: 1 });
@@ -146,22 +168,37 @@ class SongProfile extends Component {
     resetSong = () => {
         TrackPlayer.reset();
     }
+    storeAsyncData = async () => {
+        try {
+            await AsyncStorage.setItem('@MySuperStore:key', JSON.stringify(this.state.favArrayData));
+            const myArray = await AsyncStorage.getItem('@MySuperStore:key');
+            if (myArray !== null) {
+                console.log(JSON.parse(myArray));
+            }
+        } catch (error) {
+            console.log("Error in storing data:", error);
+        }
+    };
     addFavSong = () => {
         if (this.state.favClickCheck === true) {
             this.state.favClickCheck = false;
-            if (this.props.FavSongData.length > 0 && this.state.skipSongCheck === true) {
-                for (i = 0; i < this.props.FavSongData.length; i++) {
-                    if (this.props.FavSongData[i].currentTrackNumber == this.state.currentTrackNumber) {
-                        this.props.FavSongData.splice(this.props.FavSongData[i], 1);
+            if (this.state.favArrayData.length > 0 && this.state.skipSongCheck === true) {
+                for (i = 0; i <= this.state.favArrayData.length; i++) {
+                    if (this.state.favArrayData[i].currentTrackNumber == this.state.currentTrackNumber) {
+                        this.state.favArrayData.splice(this.props.FavSongData[i], 1);
                     }
                 }
+                this.storeAsyncData();
+                //this.props.add(this.state.favArrayData);
             }
-            else if (this.props.FavSongData.length > 0 && this.state.skipSongCheck === false) {
-                for (i = 0; i < this.props.FavSongData.length; i++) {
-                    if (this.props.FavSongData[i].trackNumber == this.props.selectedSongData.trackNumber) {
-                        this.props.FavSongData.splice(this.props.FavSongData[i], 1);
+            else if (this.state.favArrayData.length > 0 && this.state.skipSongCheck === false) {
+                for (i = 0; i < this.state.favArrayData.length; i++) {
+                    if (this.state.favArrayData[i].trackNumber == this.props.selectedSongData.trackNumber) {
+                        this.state.favArrayData.splice(this.state.favArrayData[i], 1);
                     }
                 }
+                this.storeAsyncData();
+                //this.props.add(this.state.favArrayData);
             }
         } // favClickCheck === true if() end
         else {
@@ -175,13 +212,20 @@ class SongProfile extends Component {
                     currentImage: this.state.currentImage,
                     currentAlbum: this.state.currentAlbum,
                 };
-                this.props.add(favSongData);
+                this.state.favArrayData.push(favSongData);
+                this.storeAsyncData();
+                //this.props.add(this.state.favArrayData);
             }
             else {
-                this.props.add(this.props.selectedSongData);
+                this.state.favArrayData.push(this.props.selectedSongData);
+                this.storeAsyncData();
+                //this.props.add(this.state.favArrayData);
             }
-        }
+        } // favClickCheck === false else end
         this.setState({ refresh: true })
+        //this.setState({ favClickCheck: !this.state.favClickCheck });
+        //this.state.favArrayData.push(this.props.selectedSongData.trackNumber);
+        //this.props.add(this.state.favArrayData);
     }
     render() {
         return (
