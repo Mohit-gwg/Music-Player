@@ -31,7 +31,7 @@ class SongProfile extends Component {
             backgroundColor: '#F44336'
         },
         headerTintColor: '#fff',
-        headerRight: <Icon type='FontAwesome' name='music' style={{ fontSize: 15, color: '#000', marginRight: 16 }} />
+        headerRight: <Icon type='MaterialIcons' name='queue-music' style={{ fontSize: 24, color: '#fff', marginRight: 16, marginTop: 2 }} />
     });
 
     componentWillMount() {
@@ -90,6 +90,28 @@ class SongProfile extends Component {
                 break;
             }
         }
+        /*
+        async () => {
+            try {
+                const myArray = await AsyncStorage.getItem('@MySuperStore:key');
+                if (myArray !== null) {
+                    console.log(JSON.parse(myArray));
+                }
+                for (var i = 0; i <= myArray.length; i++) {
+                    if (this.state.currentTrackNumber == ) {
+                        this.state.currentSong = this.state.musicData[i].source;
+                        this.state.currentTitle = this.state.musicData[i].title;
+                        this.state.currentArtist = this.state.musicData[i].artist;
+                        this.state.currentImage = this.state.musicData[i].image;
+                        this.state.currentAlbum = this.state.musicData[i].album;
+                        break;
+                    }
+                }
+            } catch (error) {
+                console.log("Error in storing data:", error);
+            }
+        };
+        */
         this.setState({ skipSongCheck: true });
         this.playSong();
     }
@@ -170,8 +192,8 @@ class SongProfile extends Component {
     }
     storeAsyncData = async () => {
         try {
-            await AsyncStorage.setItem('@MySuperStore:key', JSON.stringify(this.state.favArrayData));
-            const myArray = await AsyncStorage.getItem('@MySuperStore:key');
+            await AsyncStorage.setItem('item', JSON.stringify(this.state.favArrayData));
+            const myArray = await AsyncStorage.getItem('item');
             if (myArray !== null) {
                 console.log(JSON.parse(myArray));
             }
