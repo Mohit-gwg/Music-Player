@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { View, StatusBar, Text, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, StatusBar, Text, TouchableOpacity, ImageBackground } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
-import { Header, Icon, Button, Body, Title, Right, Card } from 'native-base';
+import { Icon, Card } from 'native-base';
 import { connect } from 'react-redux';
 import { addFavSongData } from '../Actions/FavSongData';
 import { withNavigation } from 'react-navigation';
@@ -48,7 +48,6 @@ class SongProfile extends Component {
     }
     async componentDidMount() {
         this.setState({ currentTrackNumber: this.props.selectedSongData.trackNumber })
-        await TrackPlayer.setupPlayer({});
         await TrackPlayer.add({
             id: this.props.selectedSongData.trackNumber,
             url: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.source, // just for test!
@@ -61,21 +60,19 @@ class SongProfile extends Component {
         try {
             await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
         } catch (error) {
-            // Error saving data
+            console.log(error);
         }
     };
     _retrieveData = async () => {
         try {
             const value = await AsyncStorage.getItem('TASKS');
             if (value !== null) {
-                // We have data!!
                 console.log(value);
             }
         } catch (error) {
-            // Error retrieving data
+            console.log(error);
         }
     };
-
     nextSong = () => {
         this.state.favClickCheck = false;
         var nextTrackNumber = this.state.currentTrackNumber + 1;

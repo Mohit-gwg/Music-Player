@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
-import TrackPlayer from 'react-native-track-player';
+import { View, Text, StatusBar } from 'react-native';
 
 export default class Favourites extends Component {
     render() {

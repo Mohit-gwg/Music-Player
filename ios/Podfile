@@ -30,6 +30,8 @@ target 'MusicPlayer' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
+
   target 'MusicPlayerTests' do
     inherit! :search_paths
     # Pods for testing
