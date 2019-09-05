@@ -30,6 +30,10 @@ target 'MusicPlayer' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
+  pod 'RNAudio', :path => '../node_modules/react-native-audio'
+
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
+
   target 'MusicPlayerTests' do
     inherit! :search_paths
     # Pods for testing
