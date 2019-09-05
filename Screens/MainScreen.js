@@ -5,6 +5,7 @@ import Songs from '../Components/Songs';
 import Artists from '../Components/Artists';
 import Albums from '../Components/Albums';
 import Favourites from '../Components/Favourites';
+import RecordAudio from '../Components/RecordAudio';
 
 class MainScreen extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -30,6 +31,9 @@ class MainScreen extends Component {
                     </Tab>
                     <Tab heading="FAVOURITES" textStyle={{ fontSize: 14 }} activeTabStyle={{ backgroundColor: '#B71C1C' }} tabStyle={{ backgroundColor: '#F44336' }}>
                         <Favourites />
+                    </Tab>
+                    <Tab heading="RECORD AUDIO" textStyle={{ fontSize: 14 }} activeTabStyle={{ backgroundColor: '#B71C1C' }} tabStyle={{ backgroundColor: '#F44336' }}>
+                        <RecordAudio />
                     </Tab>
                 </Tabs>
             </View>
