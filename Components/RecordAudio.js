@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StatusBar, TouchableOpacity, FlatList, Modal, ScrollView, TouchableHighlight, TextInput, Button, ToastAndroid } from 'react-native';
 import Video from 'react-native-video';
-import { Thumbnail, Icon } from 'native-base';
+import { Icon } from 'native-base';
 import { addSongData } from '../Actions/SongData';
 import { connect } from 'react-redux';
 import { withNavigation } from 'react-navigation';
@@ -22,6 +22,7 @@ class RecordAudio extends Component {
             play: 1,
             skipButtonCheck: false,
             hasPermission: undefined,
+            showEditFileModal: false,
             audioPath: '',
             fileName: '',
         }
@@ -50,6 +51,44 @@ class RecordAudio extends Component {
             .catch((error) => {
                 console.error(error);
             });
+    }
+    recordAudio = () => {
+        var RNFS = require('react-native-fs');
+        var path = RNFS.DocumentDirectoryPath + '/' + 'test.aac';
+        AudioRecorder.prepareRecordingAtPath(path, {
+            SampleRate: 22050,
+            Channels: 1,
+            AudioQuality: "Low",
+            AudioEncoding: "aac",
+            AudioEncodingBitRate: 32000,
+        });
+        AudioRecorder.startRecording();
+        this.state.fileName = '';
+    }
+    async stopRecording() {
+        await AudioRecorder.stopRecording();
+    }
+    addFileName = () => {
+        this.state.check = !this.state.check;
+        if (this.state.fileName == '') {
+            return ToastAndroid.show('Please add file name!', ToastAndroid.SHORT);
+        }
+        else {
+            var RNFS = require('react-native-fs');
+            RNFS.moveFile(RNFS.DocumentDirectoryPath + '/' + 'test.aac', RNFS.DocumentDirectoryPath + '/' + this.state.fileName + '.aac');
+            var path = RNFS.DocumentDirectoryPath + '/' + this.state.fileName + '.aac'
+            RNFS.exists(path)
+                .then((exists) => {
+                    if (exists) {
+                        console.log("file EXISTS");
+                        return ToastAndroid.show(this.state.fileName + ' file name already exist, Please try another one!', ToastAndroid.SHORT);
+                    } else {
+                        console.log('file DOES NOT EXIST');
+                        this.state.musicData.push({ title: this.state.fileName, source: path, trackNumber: 12 });
+                        this.setState({ showEditFileModal: !this.state.showEditFileModal, check: !this.state.check, audioPath: RNFS.DocumentDirectoryPath + '/' + this.state.fileName });
+                    }
+                });
+        }
     }
     showMusicProfile_Modal(visible, item) {
         if (item === undefined || item === null) {
@@ -128,6 +167,11 @@ class RecordAudio extends Component {
                     }
                     keyExtractor={item => item.trackNumber.toString()}
                 />
+                <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#E57373', position: 'absolute', bottom: 40, right: 30 }}>
+                    <TouchableHighlight onPress={() => this.showEditFile_Modal(!this.state.showEditFileModal)}>
+                        <Icon type='MaterialIcons' name='keyboard-voice' style={{ fontSize: 55, color: '#F44336', marginLeft: 2 }} />
+                    </TouchableHighlight>
+                </View>
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -170,7 +214,7 @@ class RecordAudio extends Component {
                                                         </View>
                                                     )
                                                     :
-                                                    (this.state.skipButtonCheck === false && this.state.play === 1)
+                                                    (this.state.skipButtonCheck === false && this.state.play === 1 && (this.props.selectedSongData.image != null || this.props.selectedSongData.image != undefined))
                                                         ?
                                                         (
                                                             <View style={{ marginRight: 8 }}>
@@ -184,7 +228,7 @@ class RecordAudio extends Component {
                                                             </View>
                                                         )
                                                         :
-                                                        (this.state.skipButtonCheck === false && this.state.play === 2)
+                                                        (this.state.skipButtonCheck === false && this.state.play === 2 && (this.props.selectedSongData.image != null || this.props.selectedSongData.image != undefined))
                                                             ?
                                                             (
                                                                 <View style={{ marginRight: 8 }}>
@@ -197,9 +241,37 @@ class RecordAudio extends Component {
                                                                 </View>
                                                             )
                                                             :
-                                                            (
-                                                                <View></View>
-                                                            )
+                                                            (this.state.skipButtonCheck === false && this.state.play === 1 && (this.props.selectedSongData.image == null || this.props.selectedSongData.image == undefined))
+                                                                ?
+                                                                (
+                                                                    <View style={{ marginRight: 8 }}>
+                                                                        <Video source={{ uri: this.props.selectedSongData.source }}
+                                                                            ref={(ref) => {
+                                                                                this.player = ref
+                                                                            }}
+                                                                            paused={true}
+                                                                            audioOnly={true}
+                                                                            style={{ width: 45, height: 45 }} />
+                                                                    </View>
+                                                                )
+                                                                :
+                                                                (this.state.skipButtonCheck === false && this.state.play === 2 && (this.props.selectedSongData.image == null || this.props.selectedSongData.image == undefined))
+                                                                    ?
+                                                                    (
+                                                                        <View style={{ marginRight: 8 }}>
+                                                                            <Video source={{ uri: this.props.selectedSongData.source }}
+                                                                                ref={(ref) => {
+                                                                                    this.player = ref
+                                                                                }}
+                                                                                audioOnly={true}
+                                                                                style={{ width: 45, height: 45 }} />
+                                                                        </View>
+                                                                    )
+                                                                    :
+                                                                    (
+                                                                        <View></View>
+                                                                    )
+
                                         }
                                         <View style={{ flexDirection: 'column', marginLeft: 8 }}>
                                             {
@@ -253,6 +325,43 @@ class RecordAudio extends Component {
                         </TouchableOpacity>
                     </View>
                 </Modal>
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.showEditFileModal}
+                    onRequestClose={() => {
+                        this.showEditFile_Modal(!this.state.showEditFileModal);
+                    }}
+                    style={{ height: 100 }}
+                >
+                    <View style={{ height: '40%', bottom: 0, right: 0, left: 0, position: 'absolute', backgroundColor: '#fff', borderWidth: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8 }}>
+                        <View style={{ margin: 8 }}>
+                            <ScrollView>
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', margin: 16 }}>
+                                    <TouchableHighlight onPress={() => this.recordAudio()} style={{ marginRight: 32 }}>
+                                        <Icon type='MaterialIcons' name='keyboard-voice' style={{ fontSize: 40, color: '#F44336' }} />
+                                    </TouchableHighlight>
+                                    <TouchableHighlight onPress={() => this.stopRecording()}>
+                                        <Icon type='FontAwesome' name='stop' style={{ fontSize: 40, color: '#F44336' }} />
+                                    </TouchableHighlight>
+                                </View>
+                                <View style={{ margin: 8 }}>
+                                    <TextInput
+                                        style={{ height: 50, alignSelf: 'center', marginBottom: 16, marginTop: 16 }}
+                                        placeholder="Add file Name"
+                                        onChangeText={(text) => this.setState({ fileName: text })}
+                                        value={this.state.fileName}
+                                    />
+                                </View>
+                            </ScrollView>
+                            <TouchableHighlight style={{ height: '22%', width: '100%', backgroundColor: '#F44336', alignItems: 'center', justifyContent: 'center', borderRadius: 8 }} onPress={() => this.addFileName()}>
+                                <Text style={{ textAlign: 'center', alignItems: 'center', color: '#fff' }}>Add File Name</Text>
+                            </TouchableHighlight>
+                        </View>
+                    </View>
+                </Modal>
+
             </View>
         );
     }

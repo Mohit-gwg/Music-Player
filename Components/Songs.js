@@ -102,9 +102,6 @@ class Songs extends Component {
         }
     }
     playRecordedAudio = () => {
-        for (i = this.state.musicData.length; i > this.state.musicData.length; i++) {
-
-        }
         TrackPlayer.add({
             id: 1,
             url: this.state.audioPath,

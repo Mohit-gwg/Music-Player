@@ -4,7 +4,6 @@ import Video from 'react-native-video';
 import { Icon } from 'native-base';
 import { connect } from 'react-redux';
 import { withNavigation } from 'react-navigation';
-import { ScrollView } from 'react-native-gesture-handler';
 
 class RecordedAudioProfile extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -127,8 +126,8 @@ class RecordedAudioProfile extends Component {
         return (
             <View style={{ flex: 1, backgroundColor: '#ECEFF1' }}>
                 <StatusBar barStyle="light-content" backgroundColor="#E57373" />
-                <View style={{ flex: 0.6, backgroundColor: 'red' }}>
-                    <View style={{ backgroundColor: 'yellow' }}>
+                <View style={{ flex: 0.6 }}>
+                    <View style={{}}>
                         {
                             (this.state.skipButtonCheck === true && this.state.play === 1)
                                 ?
@@ -140,7 +139,7 @@ class RecordedAudioProfile extends Component {
                                             }}
                                             paused={true}
                                             poster={'http://storage.googleapis.com/automotive-media/' + this.state.currentImage}
-                                            style={{ height: '80%', width: '100%' }} />
+                                            style={{ height: '100%', width: '100%' }} />
                                     </View>
                                 )
                                 :
@@ -153,7 +152,7 @@ class RecordedAudioProfile extends Component {
                                                     this.player = ref
                                                 }}
                                                 poster={'http://storage.googleapis.com/automotive-media/' + this.state.currentImage}
-                                                style={{ height: '80%', width: '100%' }} />
+                                                style={{ height: '100%', width: '100%' }} />
                                         </View>
                                     )
                                     :
@@ -181,7 +180,7 @@ class RecordedAudioProfile extends Component {
                                                             this.player = ref
                                                         }}
                                                         poster={'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.image}
-                                                        style={{ height: '80%', width: '100%' }} />
+                                                        style={{ height: '100%', width: '100%' }} />
                                                 </View>
                                             )
                                             :
