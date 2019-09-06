@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text, StatusBar, TouchableOpacity, FlatList, Modal, ScrollView, TouchableHighlight, TextInput, Button, ToastAndroid } from 'react-native';
-import TrackPlayer from 'react-native-track-player';
 import Video from 'react-native-video';
 import { Thumbnail, Icon } from 'native-base';
 import { addSongData } from '../Actions/SongData';
@@ -67,11 +66,15 @@ class RecordAudio extends Component {
     playSong = () => {
         this.setState({ play: 2 });
     }
+    pauseSong = () => {
+        this.setState({ play: 1 });
+    }
     nextSong = () => {
         var nextTrackNumber = this.state.currentTrackNumber + 1;
         this.state.currentTrackNumber = nextTrackNumber;
         for (var i = 0; i <= this.state.musicData.length; i++) {
             if (this.state.musicData[i].trackNumber == nextTrackNumber) {
+                this.state.currentTrackNumber = this.state.musicData[i].trackNumber
                 this.state.currentSong = this.state.musicData[i].source;
                 this.state.currentTitle = this.state.musicData[i].title;
                 this.state.currentArtist = this.state.musicData[i].artist;
@@ -99,13 +102,9 @@ class RecordAudio extends Component {
         this.setState({ skipButtonCheck: true });
         this.playSong();
     }
-    pauseSong = () => {
-        this.setState({ play: 1 });
-        TrackPlayer.pause();
-    }
     goToSongProfile = () => {
         this.setState({ showMusicModal: !this.state.showMusicModal });
-        this.props.navigation.navigate('SongProfile');
+        this.props.navigation.navigate('RecordedAudioProfile');
     }
     render() {
         return (
@@ -144,7 +143,7 @@ class RecordAudio extends Component {
                                 <View style={{ flex: 0.4 }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         {
-                                            (this.state.skipButtonCheck == true)
+                                            (this.state.skipButtonCheck === true && this.state.play === 1)
                                                 ?
                                                 (
                                                     <View style={{ marginRight: 8 }}>
@@ -152,25 +151,74 @@ class RecordAudio extends Component {
                                                             ref={(ref) => {
                                                                 this.player = ref
                                                             }}
+                                                            paused={true}
                                                             poster={'http://storage.googleapis.com/automotive-media/' + this.state.currentImage}
                                                             style={{ width: 50, height: 50 }} />
                                                     </View>
                                                 )
                                                 :
-                                                (
-                                                    <View style={{ marginRight: 8 }}>
-                                                        <Video source={{ uri: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.source }}
-                                                            ref={(ref) => {
-                                                                this.player = ref
-                                                            }}
-                                                            poster={{ uri: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.image }}
-                                                            style={{ width: 45, height: 45 }} />
-                                                    </View>
-                                                )
+                                                (this.state.skipButtonCheck === true && this.state.play === 2)
+                                                    ?
+                                                    (
+                                                        <View style={{ marginRight: 8 }}>
+                                                            <Video source={{ uri: 'http://storage.googleapis.com/automotive-media/' + this.state.currentSong }}
+                                                                ref={(ref) => {
+                                                                    this.player = ref
+                                                                }}
+                                                                poster={'http://storage.googleapis.com/automotive-media/' + this.state.currentImage}
+                                                                style={{ width: 50, height: 50 }} />
+                                                        </View>
+                                                    )
+                                                    :
+                                                    (this.state.skipButtonCheck === false && this.state.play === 1)
+                                                        ?
+                                                        (
+                                                            <View style={{ marginRight: 8 }}>
+                                                                <Video source={{ uri: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.source }}
+                                                                    ref={(ref) => {
+                                                                        this.player = ref
+                                                                    }}
+                                                                    paused={true}
+                                                                    poster={'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.image}
+                                                                    style={{ width: 45, height: 45 }} />
+                                                            </View>
+                                                        )
+                                                        :
+                                                        (this.state.skipButtonCheck === false && this.state.play === 2)
+                                                            ?
+                                                            (
+                                                                <View style={{ marginRight: 8 }}>
+                                                                    <Video source={{ uri: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.source }}
+                                                                        ref={(ref) => {
+                                                                            this.player = ref
+                                                                        }}
+                                                                        poster={'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.image}
+                                                                        style={{ width: 45, height: 45 }} />
+                                                                </View>
+                                                            )
+                                                            :
+                                                            (
+                                                                <View></View>
+                                                            )
                                         }
                                         <View style={{ flexDirection: 'column', marginLeft: 8 }}>
-                                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#F44336' }}>{this.props.selectedSongData.title}</Text>
-                                            <Text style={{ fontSize: 12, marginTop: 2, color: '#E57373' }}>{this.props.selectedSongData.artist}</Text>
+                                            {
+                                                (this.state.currentTitle === '')
+                                                    ?
+                                                    (
+                                                        <View>
+                                                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#F44336' }}>{this.props.selectedSongData.title}</Text>
+                                                            <Text style={{ fontSize: 12, marginTop: 2, color: '#E57373' }}>{this.props.selectedSongData.artist}</Text>
+                                                        </View>
+                                                    )
+                                                    :
+                                                    (
+                                                        <View>
+                                                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#F44336' }}>{this.state.currentTitle}</Text>
+                                                            <Text style={{ fontSize: 12, marginTop: 2, color: '#E57373' }}>{this.state.currentArtist}</Text>
+                                                        </View>
+                                                    )
+                                            }
                                         </View>
                                     </View>
                                 </View>
