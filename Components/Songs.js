@@ -61,7 +61,7 @@ class Songs extends Component {
         }
     }
     showEditFile_Modal(visible) {
-        this.setState({ showEditFileModal: visible, check: !this.state.check });
+        this.setState({ showEditFileModal: visible });
     }
     recordAudio = () => {
         var RNFS = require('react-native-fs');

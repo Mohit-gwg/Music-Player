@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StatusBar, TouchableOpacity, FlatList, Modal, ScrollView, TouchableHighlight, TextInput, Button, ToastAndroid } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity, FlatList, Modal, ScrollView, TouchableHighlight, TextInput, ToastAndroid } from 'react-native';
 import Video from 'react-native-video';
 import { Icon } from 'native-base';
 import { addSongData } from '../Actions/SongData';
 import { connect } from 'react-redux';
 import { withNavigation } from 'react-navigation';
-import { AudioRecorder, AudioUtils, AudioPlayer } from 'react-native-audio';
+import { AudioRecorder, AudioUtils } from 'react-native-audio';
 class RecordAudio extends Component {
     constructor(props) {
         super(props);
@@ -69,23 +69,21 @@ class RecordAudio extends Component {
         await AudioRecorder.stopRecording();
     }
     addFileName = () => {
+        var RNFS = require('react-native-fs');
+        var path = RNFS.DocumentDirectoryPath + '/' + this.state.fileName + '.aac'
         this.state.check = !this.state.check;
         if (this.state.fileName == '') {
             return ToastAndroid.show('Please add file name!', ToastAndroid.SHORT);
         }
         else {
-            var RNFS = require('react-native-fs');
-            RNFS.moveFile(RNFS.DocumentDirectoryPath + '/' + 'test.aac', RNFS.DocumentDirectoryPath + '/' + this.state.fileName + '.aac');
-            var path = RNFS.DocumentDirectoryPath + '/' + this.state.fileName + '.aac'
+            RNFS.moveFile(RNFS.DocumentDirectoryPath + '/' + 'test.aac', path);
             RNFS.exists(path)
                 .then((exists) => {
                     if (exists) {
-                        console.log("file EXISTS");
                         return ToastAndroid.show(this.state.fileName + ' file name already exist, Please try another one!', ToastAndroid.SHORT);
                     } else {
-                        console.log('file DOES NOT EXIST');
                         this.state.musicData.push({ title: this.state.fileName, source: path, trackNumber: 12 });
-                        this.setState({ showEditFileModal: !this.state.showEditFileModal, check: !this.state.check, audioPath: RNFS.DocumentDirectoryPath + '/' + this.state.fileName });
+                        this.setState({ showEditFileModal: !this.state.showEditFileModal, check: !this.state.check, audioPath: path });
                     }
                 });
         }
@@ -100,7 +98,7 @@ class RecordAudio extends Component {
         }
     }
     showEditFile_Modal(visible) {
-        this.setState({ showEditFileModal: visible, check: !this.state.check });
+        this.setState({ showEditFileModal: visible });
     }
     playSong = () => {
         this.setState({ play: 2 });
