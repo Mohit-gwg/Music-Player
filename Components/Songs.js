@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StatusBar, TouchableOpacity, FlatList, Modal, ScrollView, TouchableHighlight, TextInput, Button, ToastAndroid } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity, FlatList, Modal, ScrollView, TouchableHighlight, TextInput, ToastAndroid } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
 import { Thumbnail, Icon } from 'native-base';
 import { addSongData } from '../Actions/SongData';
 import { connect } from 'react-redux';
 import { withNavigation } from 'react-navigation';
-import { AudioRecorder, AudioUtils, AudioPlayer } from 'react-native-audio';
+import { AudioRecorder, AudioUtils } from 'react-native-audio';
 class Songs extends Component {
     constructor(props) {
         super(props);
@@ -115,7 +115,7 @@ class Songs extends Component {
             TrackPlayer.reset();
             TrackPlayer.add({
                 id: this.state.currentTrackNumber,
-                url: 'http://storage.googleapis.com/automotive-media/' + this.state.currentSong, // just for test!
+                url: 'http://storage.googleapis.com/automotive-media/' + this.state.currentSong,
                 title: this.state.currentTitle,
                 artist: this.state.currentArtist,
                 artwork: 'http://storage.googleapis.com/automotive-media/' + this.state.currentImage,
@@ -134,7 +134,7 @@ class Songs extends Component {
         else {
             TrackPlayer.add({
                 id: this.props.selectedSongData.trackNumber,
-                url: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.source, // just for test!
+                url: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.source,
                 title: this.props.selectedSongData.title,
                 artist: this.props.selectedSongData.artist,
                 artwork: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.image,

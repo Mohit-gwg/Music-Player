@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StatusBar, Text, Image, TouchableOpacity } from 'react-native';
+import { View, StatusBar, Text, TouchableOpacity } from 'react-native';
 import Video from 'react-native-video';
 import { Icon } from 'native-base';
 import { connect } from 'react-redux';
@@ -40,19 +40,6 @@ class RecordedAudioProfile extends Component {
                 console.error(error);
             });
     }
-    /*
-    async componentDidMount() {
-        this.setState({ currentTrackNumber: this.props.selectedSongData.trackNumber })
-       await TrackPlayer.setupPlayer({});
-        await TrackPlayer.add({
-            id: this.props.selectedSongData.trackNumber,
-            url: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.source, // just for test!
-            title: this.props.selectedSongData.title,
-            artist: this.props.selectedSongData.artist,
-            artwork: 'http://storage.googleapis.com/automotive-media/' + this.props.selectedSongData.image,
-        })
-    }
-    */
     nextSong = () => {
         var nextTrackNumber = this.state.currentTrackNumber + 1;
         this.state.currentTrackNumber = nextTrackNumber;
@@ -92,37 +79,12 @@ class RecordedAudioProfile extends Component {
         this.setState({ play: 1 });
     }
     replaySong = () => {
-        /*
-         TrackPlayer.reset();
-         if (this.state.skipButtonCheck === true) {
-             TrackPlayer.add({
-                 id: this.state.currentTrackNumber,
-                 url: 'http://storage.googleapis.com/automotive-media/' + this.state.currentSong, // just for test!
-                 title: this.state.currentTitle,
-                 artist: this.state.currentArtist,
-                 artwork: 'http://storage.googleapis.com/automotive-media/' + this.state.currentImage,
-             }).then(() => {
-                 TrackPlayer.play();
-             });
-         }
-         else {
-             TrackPlayer.add({
-                 id: this.props.selectedSongData.trackNumber,
-                 url: 'http://storage.googleapis.com/automotive-media' + this.props.selectedSongData.source, // just for test!
-                 title: this.props.selectedSongData.title,
-                 artist: this.props.selectedSongData.artist,
-                 artwork: 'http://storage.googleapis.com/automotive-media' + this.props.selectedSongData.image,
-             }).then(() => {
-                 TrackPlayer.play();
-             });
-         }
-         */
+        console.log('Replay Song');
     }
     resetSong = () => {
-        //TrackPlayer.reset();
+        console.log('Reset Song');
     }
     render() {
-        console.log('Redux Data', this.props.selectedSongData)
         return (
             <View style={{ flex: 1, backgroundColor: '#ECEFF1' }}>
                 <StatusBar barStyle="light-content" backgroundColor="#E57373" />
