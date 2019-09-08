@@ -47,7 +47,7 @@ class RecordAudio extends Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState({ musicData: responseJson.music })
+                this.setState({ musicData: responseJson.music });
             })
             .catch((error) => {
                 console.error(error);
@@ -73,7 +73,6 @@ class RecordAudio extends Component {
     addFileName = () => {
         var RNFS = require('react-native-fs');
         var path = `${RNFS.DocumentDirectoryPath}/${this.state.fileName}.aac`;
-        console.log(path);
         this.state.check = !this.state.check;
         if (this.state.fileName == '') {
             return ToastAndroid.show('Please add file name!', ToastAndroid.SHORT);
@@ -105,18 +104,32 @@ class RecordAudio extends Component {
     showEditFile_Modal(visible) {
         this.setState({ showEditFileModal: visible });
     }
-    playSong = () => {
-        this.setState({ play: 2 });
-    }
-    pauseSong = () => {
-        this.setState({ play: 1 });
+    previousSong = () => {
+        var nextTrackNumber = this.state.currentTrackNumber - 1;
+        if (nextTrackNumber == -1) {
+            this.nextSong();
+        }
+        else {
+            this.state.currentTrackNumber = nextTrackNumber;
+            for (var i = 0; i <= this.state.musicData.length; i++) {
+                if (this.state.musicData[i].trackNumber == nextTrackNumber) {
+                    this.state.currentSong = this.state.musicData[i].source;
+                    this.state.currentTitle = this.state.musicData[i].title;
+                    this.state.currentArtist = this.state.musicData[i].artist;
+                    this.state.currentImage = this.state.musicData[i].image;
+                    this.state.currentAlbum = this.state.musicData[i].album;
+                    break;
+                }
+            }
+            this.setState({ skipButtonCheck: true, play: 2 });
+        }
     }
     nextSong = () => {
         var nextTrackNumber = this.state.currentTrackNumber + 1;
         this.state.currentTrackNumber = nextTrackNumber;
         for (var i = 0; i <= this.state.musicData.length; i++) {
             if (this.state.musicData[i].trackNumber == nextTrackNumber) {
-                this.state.currentTrackNumber = this.state.musicData[i].trackNumber
+                this.state.currentTrackNumber = this.state.musicData[i].trackNumber;
                 this.state.currentSong = this.state.musicData[i].source;
                 this.state.currentTitle = this.state.musicData[i].title;
                 this.state.currentArtist = this.state.musicData[i].artist;
@@ -125,24 +138,7 @@ class RecordAudio extends Component {
                 break;
             }
         }
-        this.setState({ skipButtonCheck: true });
-        this.playSong();
-    }
-    previousSong = () => {
-        var nextTrackNumber = this.state.currentTrackNumber - 1;
-        this.state.currentTrackNumber = nextTrackNumber;
-        for (var i = 0; i <= this.state.musicData.length; i++) {
-            if (this.state.musicData[i].trackNumber == nextTrackNumber) {
-                this.state.currentSong = this.state.musicData[i].source;
-                this.state.currentTitle = this.state.musicData[i].title;
-                this.state.currentArtist = this.state.musicData[i].artist;
-                this.state.currentImage = this.state.musicData[i].image;
-                this.state.currentAlbum = this.state.musicData[i].album;
-                break;
-            }
-        }
-        this.setState({ skipButtonCheck: true });
-        this.playSong();
+        this.setState({ skipButtonCheck: true, play: 2 });
     }
     goToSongProfile = () => {
         this.setState({ showMusicModal: !this.state.showMusicModal });
@@ -334,13 +330,13 @@ class RecordAudio extends Component {
                                                 (this.state.play === 1)
                                                     ?
                                                     (
-                                                        <TouchableOpacity onPress={() => this.playSong()}>
+                                                        <TouchableOpacity onPress={() => this.setState({ play: 2 })}>
                                                             <Icon type='FontAwesome' name='play-circle' style={{ fontSize: 42, color: '#F44336' }} />
                                                         </TouchableOpacity>
                                                     )
                                                     :
                                                     (
-                                                        <TouchableOpacity onPress={() => this.pauseSong()}>
+                                                        <TouchableOpacity onPress={() => this.setState({ play: 1 })}>
                                                             <Icon type='MaterialIcons' name='pause-circle-filled' style={{ fontSize: 42, color: '#F44336' }} />
                                                         </TouchableOpacity>
                                                     )
