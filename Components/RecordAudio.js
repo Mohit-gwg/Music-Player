@@ -73,7 +73,6 @@ class RecordAudio extends Component {
     addFileName = () => {
         var RNFS = require('react-native-fs');
         var path = `${RNFS.DocumentDirectoryPath}/${this.state.fileName}.aac`;
-        //var path = RNFS.DocumentDirectoryPath + '/' + 'test.aac';
         console.log(path);
         this.state.check = !this.state.check;
         if (this.state.fileName == '') {
@@ -95,7 +94,7 @@ class RecordAudio extends Component {
         this.setState({ showEditFileModal: !this.state.showEditFileModal, check: !this.state.check });
     }
     showMusicProfile_Modal(visible, item) {
-        if (item === undefined || item === null) {
+        if (item === undefined) {
             this.setState({ showMusicModal: visible });
         }
         else {

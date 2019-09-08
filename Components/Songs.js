@@ -52,7 +52,7 @@ class Songs extends Component {
             });
     }
     showMusicProfile_Modal(visible, item) {
-        if (item === undefined || item === null) {
+        if (item === undefined) {
             this.setState({ showMusicModal: visible });
         }
         else {
